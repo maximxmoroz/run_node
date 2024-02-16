@@ -1,0 +1,14 @@
+---
+- import_playbook: docker.yaml
+- import_playbook: nvidia.yaml
+# # Reboot the system
+# - name: Reboot the system
+#   become: yes
+#   shell: sudo reboot
+#   async: 1
+#   poll: 0
+#   ignore_errors: yes
+
+#  post_tasks:
+# Include tasks from nvidia-container.yaml playbook
+#  - import_tasks: nvidia-container.yaml

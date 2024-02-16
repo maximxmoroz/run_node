@@ -1,7 +1,6 @@
 ---
-- hosts: localhost
-  become: true
-
+- hosts: all
+  become: yes
   tasks:
     - name: Add Nvidia Graphics Drivers PPA
       ansible.builtin.apt_repository:

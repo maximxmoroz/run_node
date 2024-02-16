@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: all
   become: true
   tasks:
     - name: Update package list
@@ -36,7 +36,7 @@
       file:
         path: /etc/apt/keyrings
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Download and install Docker GPG keyring
       become: yes
@@ -45,7 +45,7 @@
     - name: Add Repo
       ansible.builtin.apt_repository:
         filename: docker.gpg
-        repo: 'deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+        repo: "deb [arch={{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
 
     - name: Update package
@@ -55,7 +55,7 @@
 
     - name: Install docker
       ansible.builtin.apt:
-        name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+        name: ["docker-ce", "docker-ce-cli", "containerd.io"]
         state: latest
         update_cache: true
 
@@ -63,7 +63,7 @@
       ansible.builtin.get_url:
         url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
         dest: /usr/local/bin/docker-compose
-        mode: 'u+x,g+x'
+        mode: "u+x,g+x"
 
     - name: Install Docker Module for Python
       ansible.builtin.pip:
