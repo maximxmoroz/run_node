@@ -18,7 +18,7 @@ sudo apt install -y ansible
 
 ```
 git clone https://github.com/maximxmoroz/ansible-script.git &&
-cd ansibledirectory
+cd ansible-script
 ```
 
 4. Setup Docker with Ansible:
