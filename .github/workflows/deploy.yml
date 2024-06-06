@@ -1,0 +1,27 @@
+name: CI Deploy
+
+on:
+  push:
+    branches:
+      - remote_access
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@89.23.119.109 << 'EOF'
+            cd /root/ansible-script
+            git pull origin remote_access
+            ansible-playbook docker.yaml  # Command to run your deployment script
+          EOF
