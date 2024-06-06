@@ -14,16 +14,14 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        env:
-          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
-
-      - name: Deploy to Server
-        run: |
-          ssh -o StrictHostKeyChecking=no root@89.23.119.109 << 'EOF'
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
             cd /root/ansible-script
             git pull origin remote_access
-            ansible-playbook docker.yaml  # Command to run your deployment script
-          EOF
+            ansible-playbook docker.yaml
