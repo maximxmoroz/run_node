@@ -22,5 +22,6 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /root/ansible-script
-            git pull origin remote_access
+            git checkout remote_access
+            git pull
             ansible-playbook docker.yaml
