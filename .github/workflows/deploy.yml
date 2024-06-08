@@ -19,7 +19,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
             cd /root/ansible-script
