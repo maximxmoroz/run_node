@@ -1,0 +1,29 @@
+---
+- name: Add Nvidia Graphics Drivers PPA
+  ansible.builtin.apt_repository:
+    repo: "ppa:graphics-drivers/ppa"
+    state: present
+    filename: nvidia-graphics-drivers-ppa
+
+- name: Install Ubuntu drivers
+  ansible.builtin.apt:
+    name: ubuntu-drivers-common
+    state: present
+
+- name: Install Nvidia driver version custom
+  ansible.builtin.apt:
+    name: nvidia-driver-530
+    state: present
+
+- name: Reboot server
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+  ignore_errors: yes
+
+- name: Wait for the server to be back online
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+
+- name: Continue tasks after reboot
+  ansible.builtin.shell: |
+    echo "Server is back online, continuing tasks..."
