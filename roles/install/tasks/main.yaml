@@ -1,0 +1,4 @@
+---
+- import_tasks: docker.yaml
+- import_tasks: nvidia.yaml
+- import_tasks: nvidia-container.yaml
