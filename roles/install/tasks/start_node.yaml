@@ -1,0 +1,32 @@
+---
+- name: Create directories for cyber node
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'  # Set permissions if necessary
+  loop:
+    - "{{ ansible_env.HOME }}/.cyber"
+    - "{{ ansible_env.HOME }}/.cyber/data"
+    - "{{ ansible_env.HOME }}/.cyber/config"
+
+- name: Pull and run Cyber fullnode Docker container
+  docker_container:
+    name: bostrom
+    image: cyberd/bostrom:v3.0.1-cuda11.4
+    state: started
+    restart_policy: always
+    ports:
+      - "26656:26656"
+      - "26657:26657"
+      - "1317:1317"
+    env:
+      ALLOW_SEARCH: "true"
+    volumes:
+      - "{{ ansible_env.HOME }}/.cyber:/root/.cyber"
+    device_requests:
+      - # Add nVidia GPUs to this container
+        driver: nvidia
+        count: -1
+        capabilities:
+          - gpu
+
