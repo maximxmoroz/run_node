@@ -1,0 +1,7 @@
+---
+- name: Start Bostrom container
+  docker_container:
+    name: bostrom
+    state: started
+    restart_policy: always
+  tags: start_bostrom 
