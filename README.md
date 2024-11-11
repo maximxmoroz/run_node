@@ -39,12 +39,9 @@ ansible-playbook -i inventories/hosts.ini install_requirements.yaml
 ## Install Node
 
 ```bash
-ansible-playbook -i inventories/hosts.ini install_node.yaml --tags="pull_container"
+ansible-playbook -i inventories/hosts.ini install_node.yaml --tags="pull_container,snapshot_download"
 ```
 
-```bash
-ansible-playbook -i inventories/hosts.ini install_node.yaml --tags="snapshot_download"
-```
 ### Your script should successfully complete at the snapshot_download step
 
 You can check the download status using the command on your server:
