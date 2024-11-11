@@ -86,7 +86,7 @@ ansible-playbook -i inventories/hosts.ini install_node.yaml --tags="peers"
 If you already have a  node and you want to download and install a new snapshot then use the following commands
 
 ```bash
-ansible-playbook -i inventories/hosts.ini install_node.yaml --tags="download"
+ansible-playbook -i inventories/hosts.ini install_node.yaml --tags="snapshot_download"
 ```
 
 Run the following command only if you are sure that the snapshot has been downloaded
