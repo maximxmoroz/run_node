@@ -1,4 +1,10 @@
 ---
+- name: Stop Bostrom container if it exists
+  docker_container:
+    name: bostrom
+    state: stopped
+  ignore_errors: true
+
 - name: Find the snapshot file
   find:
     paths: /root
