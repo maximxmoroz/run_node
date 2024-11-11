@@ -1,0 +1,36 @@
+---
+- name: Install UFW if not already installed
+  become: yes
+  apt:
+    name: ufw
+    state: present
+  when: ansible_distribution == "Ubuntu"
+  tags: ufw_setup
+
+- name: Enable UFW
+  become: yes
+  ufw:
+    state: enabled
+    policy: allow
+  tags: ufw_setup
+
+- name: Allow specific ports
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - 80
+    - 443
+    - 26656
+    - 8090
+    - 3000
+    - 4001
+  tags: ufw_setup
+
+- name: Reload UFW to apply changes
+  become: yes
+  command: ufw reload
+  when: ansible_distribution == "Ubuntu"
+  tags: ufw_setup

@@ -1,0 +1,5 @@
+---
+- import_tasks: 01_pull_container.yaml
+- import_tasks: 02_snapshot.yaml
+- import_tasks: 03_untar.yaml
+- import_tasks: 04_add_peers.yaml

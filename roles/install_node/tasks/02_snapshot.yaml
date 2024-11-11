@@ -1,0 +1,43 @@
+---
+- name: Fetch the list of available snapshots
+  uri:
+    url: "https://snapshot.cybernode.ai/"
+    return_content: yes
+  register: snapshots_html
+  tags: snapshot_download 
+
+- name: Extract the latest snapshot filename
+  set_fact:
+    latest_snapshot: "{{ snapshots_html.content | regex_findall('bostrom_pruned_15734875\\.tar\\.gz') | last }}"
+  tags: snapshot_download
+
+- name: Set the full snapshot URL
+  set_fact:
+    snapshot_url: "https://snapshot.cybernode.ai/{{ latest_snapshot }}"
+  tags: snapshot_download
+
+- name: Ensure tmux is installed
+  ansible.builtin.package:
+    name: tmux
+    state: present
+  tags: snapshot_download
+
+- name: Create tmux session for snapshot download if it doesn't exist
+  ansible.builtin.shell: |
+    tmux has-session -t snapshot_download || tmux new-session -d -s snapshot_download
+  args:
+    executable: /bin/bash
+  tags: snapshot_download
+
+- name: Start snapshot download in tmux session
+  ansible.builtin.shell: |
+    tmux send-keys -t snapshot_download 'wget {{ snapshot_url }} -O /root/{{ latest_snapshot }}' C-m
+  args:
+    executable: /bin/bash
+  tags: snapshot_download
+
+- name: Display a message indicating snapshot download has started
+  debug:
+    msg: "Snapshot download started in tmux session 'snapshot_download'."
+  tags: snapshot_download
+

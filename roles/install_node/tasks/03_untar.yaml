@@ -1,0 +1,67 @@
+---
+- name: Find the snapshot file
+  find:
+    paths: /root
+    patterns: "bostrom_pruned_*.tar.gz"
+  register: snapshot_file
+  tags: untar
+
+- name: Fail if no snapshot file is found
+  fail:
+    msg: "No snapshot file found in /root with the pattern 'bostrom_pruned_<number>.tar.gz'."
+  when: snapshot_file.matched == 0
+  tags: untar
+
+- name: Ensure tmux is installed
+  ansible.builtin.package:
+    name: tmux
+    state: present
+  tags: untar
+
+- name: Create tmux session for snapshot extraction if it doesn't exist
+  ansible.builtin.shell: |
+    tmux has-session -t snapshot_extract || tmux new-session -d -s snapshot_extract
+  args:
+    executable: /bin/bash
+  tags: untar
+
+- name: Check if priv_validator_state.json exists
+  stat:
+    path: /root/.cyber/data/priv_validator_state.json
+  register: priv_validator_state
+  tags: untar
+
+- name: Backup priv_validator_state.json if it exists
+  copy:
+    src: /root/.cyber/data/priv_validator_state.json
+    dest: /root/.cyber/priv_validator_state.json
+    remote_src: yes
+  when: priv_validator_state.stat.exists
+  tags: untar
+
+- name: Extract the snapshot file in tmux session
+  ansible.builtin.shell: |
+    tmux send-keys -t snapshot_extract 'tar -xzvf {{ snapshot_file.files[0].path }} -C /root/.cyber --strip-components=2' C-m
+  args:
+    executable: /bin/bash
+  when: snapshot_file.matched > 0
+  tags: untar
+
+- name: Set ownership to root for all extracted files
+  ansible.builtin.command:
+    cmd: chown -R root:root /root/.cyber
+  tags: untar
+
+- name: Restore priv_validator_state.json if it was backed up
+  copy:
+    src: /root/.cyber/priv_validator_state.json
+    dest: /root/.cyber/data/priv_validator_state.json
+    remote_src: yes
+  when: priv_validator_state.stat.exists
+  tags: untar
+
+- name: Display a message indicating snapshot extraction has started
+  debug:
+    msg: "Snapshot extraction started in tmux session 'snapshot_extract'."
+  tags: untar
+

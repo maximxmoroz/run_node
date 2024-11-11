@@ -1,0 +1,36 @@
+---
+- name: Define peers
+  set_fact:
+    persistent_peers: "c24b0c224fa03d20359f9ae91886378ff47c5034@85.10.207.173:36656"
+  tags: peers
+
+- name: Update persistent_peers in config.toml
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.cyber/config/config.toml"
+    regexp: '^persistent_peers ='
+    line: 'persistent_peers = "{{ persistent_peers }}"'
+    state: present
+    backup: yes
+  tags: peers
+
+- name: Change minimum-gas-prices in app.toml
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.cyber/config/app.toml"
+    regexp: '^minimum-gas-prices ='
+    line: 'minimum-gas-prices = "0boot"'
+    state: present
+    backup: yes
+  tags: peers
+
+- name: Create symlink for current upgrade
+  file:
+    src: /root/.cyber/cosmovisor/upgrades/v4/
+    dest: /root/.cyber/cosmovisor/current
+    state: link
+  tags: peers
+
+- name: Restart Bostrom container
+  docker_container:
+    name: bostrom
+    state: started
+  tags: peers

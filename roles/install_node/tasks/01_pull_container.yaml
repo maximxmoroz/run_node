@@ -8,11 +8,12 @@
     - "{{ ansible_env.HOME }}/.cyber"
     - "{{ ansible_env.HOME }}/.cyber/data"
     - "{{ ansible_env.HOME }}/.cyber/config"
-
+  tags: pull_container
+ 
 - name: Pull and run Cyber fullnode Docker container
   docker_container:
     name: bostrom
-    image: cyberd/bostrom:v3.0.0-cuda11.4
+    image: cyberd/bostrom:v5.2.0-cuda11.4
     state: started
     restart_policy: always
     ports:
@@ -28,4 +29,17 @@
         count: -1
         capabilities:
           - gpu
+  tags: pull_container
 
+- name: Create symlink for current upgrade
+  file:
+    src: /root/.cyber/cosmovisor/upgrades/v4/
+    dest: /root/.cyber/cosmovisor/current
+    state: link
+  tags: pull_container
+
+- name: Restart Bostrom container
+  docker_container:
+    name: bostrom
+    state: stopped
+  tags: pull_container
